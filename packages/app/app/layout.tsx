@@ -39,13 +39,13 @@ export default function RootLayout({
             <header className="p-2 items-center flex justify-between border-b">
               <div className="flex items-center">
                 <div className="text-sm font-bold tracking-wider mr-12">
-                  AlloApp
+                  AlloKit
                 </div>
                 <Link href="/">
-                  <Button variant={"link"}>Discover Grants</Button>
+                  <Button variant={"link"}>Discover Projects</Button>
                 </Link>
-                <Link href="/grant/create">
-                  <Button variant={"link"}>Create Grant</Button>
+                <Link href="/project/create">
+                  <Button variant={"link"}>Register Project</Button>
                 </Link>
               </div>
               <div className="flex gap-1">

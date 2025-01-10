@@ -9,7 +9,7 @@ export function Page({
 }: PropsWithChildren<{
   actions?: ReactNode;
   backLink?: string;
-  title: string;
+  title: string | ReactNode;
 }>) {
   return (
     <>

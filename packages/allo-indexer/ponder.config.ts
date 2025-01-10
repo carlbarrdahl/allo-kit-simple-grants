@@ -12,16 +12,25 @@ const networks = {
   },
 };
 
-const { YourContract } = deployedContracts[targetNetwork.id];
+const { Allocator, Strategy, Registry } = deployedContracts[targetNetwork.id];
 
 export default createConfig({
   networks: networks,
   contracts: {
-    YourContract: {
+    Allocator: {
       network: targetNetwork.name,
-      abi: YourContract.abi,
-      address: YourContract.address,
-      startBlock: YourContract.startBlock || 0,
+      abi: Allocator.abi,
+      startBlock: 0,
+    },
+    Strategy: {
+      network: targetNetwork.name,
+      abi: Strategy.abi,
+      startBlock: 0,
+    },
+    Registry: {
+      network: targetNetwork.name,
+      abi: Registry.abi,
+      startBlock: 0,
     },
   },
 });

@@ -8,8 +8,12 @@ import { createClient } from "~/lib/graphql";
 
 export type Variables = {
   limit?: number;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
   where?: {
     address_in?: Address[];
+    strategy_in?: Address[];
+    recipient_in?: Address[];
   };
 };
 
@@ -21,7 +25,7 @@ export function useIndexer<T>({
   enabled = true,
 }: {
   queryKey: unknown[];
-  queryFn: (r: OperationResult["data"]) => {
+  queryFn: (r: OperationResult["data"]) => Promise<{
     items: T[];
     totalCount: number;
     pageInfo: {
@@ -30,7 +34,7 @@ export function useIndexer<T>({
       hasPreviousPage: boolean;
       startCursor: string;
     };
-  };
+  }>;
   query: TypedDocumentNode;
   variables: Variables;
   enabled?: boolean;
@@ -49,8 +53,10 @@ export function useIndexer<T>({
           return queryFn(r.data);
         });
     },
-    refetchInterval: ({ state }) =>
+    refetchInterval: ({ state, ...rest }) =>
       // Try refetching if items are empty. Sometimes the indexer takes time to pick up the new data.
-      (state.data?.items?.length ?? 0) > 0 ? 0 : 500,
+      {
+        return state.data?.items.length ? 0 : 1000;
+      },
   });
 }

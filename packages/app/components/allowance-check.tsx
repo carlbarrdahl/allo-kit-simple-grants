@@ -37,5 +37,14 @@ export function AllowanceCheck({
       </Button>
     );
   }
+
+  if ((token.data?.balance ?? 0) <= parsedAmount) {
+    return (
+      <Button disabled variant="ghost">
+        Insufficient balance
+      </Button>
+    );
+  }
+
   return <>{children}</>;
 }

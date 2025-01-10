@@ -1,3 +1,6 @@
+"use client";
+
+import { useQueryClient } from "@tanstack/react-query";
 import { Address, erc20Abi, formatUnits } from "viem";
 import {
   useAccount,
@@ -5,8 +8,8 @@ import {
   useReadContracts,
   useWriteContract,
 } from "wagmi";
+
 import { useWaitForEvent } from "./use-wait-for-event";
-import { useQueryClient } from "@tanstack/react-query";
 
 // Get token decimals, symbol, and account balance
 export function useToken(address?: Address, account?: Address) {
@@ -22,7 +25,7 @@ export function useToken(address?: Address, account?: Address) {
     ],
   });
 
-  const [symbol, decimals = 0, balance = 0] = data?.map((d) => d.result) ?? [];
+  const [symbol, decimals = 0, balance] = data?.map((d) => d.result) ?? [];
 
   return {
     ...query,
@@ -30,8 +33,10 @@ export function useToken(address?: Address, account?: Address) {
       ? null
       : {
           address,
-          balance: balance as number | undefined,
-          formatted: formatUnits(BigInt(balance as number), Number(decimals)),
+          balance: balance as BigInt | undefined,
+          formatted: balance
+            ? formatUnits(BigInt(balance as number), Number(decimals))
+            : null,
           symbol: symbol as string,
           decimals: Number(decimals),
         },

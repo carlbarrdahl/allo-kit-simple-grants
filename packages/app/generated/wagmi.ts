@@ -1,9 +1,110 @@
 import {
-  createUseReadContract,
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
+  createUseReadContract,
 } from 'wagmi/codegen'
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Allocator
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const allocatorAbi = [
+  {
+    type: 'error',
+    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
+    name: 'AddressEmptyCode',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'AddressInsufficientBalance',
+  },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+  {
+    type: 'error',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'SafeERC20FailedOperation',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+    ],
+    name: 'Allocate',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+    ],
+    name: 'Withdraw',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipients', internalType: 'address[]', type: 'address[]' },
+      { name: 'amounts', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes[]', type: 'bytes[]' },
+    ],
+    name: 'allocate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipients', internalType: 'address[]', type: 'address[]' },
+      { name: 'amounts', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes[]', type: 'bytes[]' },
+    ],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ERC20Mock
@@ -178,10 +279,86 @@ export const erc20MockAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Strategy
+// Registry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const strategyAbi = [
+export const registryAbi = [
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'project',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'metadataURI',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+    ],
+    name: 'Approve',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'project',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'metadataURI',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+    ],
+    name: 'Register',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'project', internalType: 'address', type: 'address' },
+      { name: 'metadataURI', internalType: 'string', type: 'string' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'approve',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'projects',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'project', internalType: 'address', type: 'address' },
+      { name: 'metadataURI', internalType: 'string', type: 'string' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'register',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SimpleGrants
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const simpleGrantsAbi = [
   {
     type: 'constructor',
     inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
@@ -300,6 +477,33 @@ export const strategyAbi = [
     name: 'Register',
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+    ],
+    name: 'Withdraw',
+  },
+  {
     type: 'function',
     inputs: [
       { name: 'recipients', internalType: 'address[]', type: 'address[]' },
@@ -325,22 +529,15 @@ export const strategyAbi = [
   {
     type: 'function',
     inputs: [],
-    name: 'id',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
     name: 'owner',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'projects',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
     stateMutability: 'view',
   },
   {
@@ -363,8 +560,27 @@ export const strategyAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'strategyName',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
     name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipients', internalType: 'address[]', type: 'address[]' },
+      { name: 'amounts', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes[]', type: 'bytes[]' },
+    ],
+    name: 'withdraw',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -372,8 +588,101 @@ export const strategyAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Strategy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const strategyAbi = [
+  {
+    type: 'constructor',
+    inputs: [{ name: '_name', internalType: 'string', type: 'string' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'strategyName',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  { type: 'receive', stateMutability: 'payable' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link allocatorAbi}__
+ */
+export const useWriteAllocator = /*#__PURE__*/ createUseWriteContract({
+  abi: allocatorAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link allocatorAbi}__ and `functionName` set to `"allocate"`
+ */
+export const useWriteAllocatorAllocate = /*#__PURE__*/ createUseWriteContract({
+  abi: allocatorAbi,
+  functionName: 'allocate',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link allocatorAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useWriteAllocatorWithdraw = /*#__PURE__*/ createUseWriteContract({
+  abi: allocatorAbi,
+  functionName: 'withdraw',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link allocatorAbi}__
+ */
+export const useSimulateAllocator = /*#__PURE__*/ createUseSimulateContract({
+  abi: allocatorAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link allocatorAbi}__ and `functionName` set to `"allocate"`
+ */
+export const useSimulateAllocatorAllocate =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: allocatorAbi,
+    functionName: 'allocate',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link allocatorAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useSimulateAllocatorWithdraw =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: allocatorAbi,
+    functionName: 'withdraw',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link allocatorAbi}__
+ */
+export const useWatchAllocatorEvent = /*#__PURE__*/ createUseWatchContractEvent(
+  { abi: allocatorAbi },
+)
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link allocatorAbi}__ and `eventName` set to `"Allocate"`
+ */
+export const useWatchAllocatorAllocateEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: allocatorAbi,
+    eventName: 'Allocate',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link allocatorAbi}__ and `eventName` set to `"Withdraw"`
+ */
+export const useWatchAllocatorWithdrawEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: allocatorAbi,
+    eventName: 'Withdraw',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc20MockAbi}__
@@ -537,6 +846,297 @@ export const useWatchErc20MockTransferEvent =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registryAbi}__
+ */
+export const useReadRegistry = /*#__PURE__*/ createUseReadContract({
+  abi: registryAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registryAbi}__ and `functionName` set to `"projects"`
+ */
+export const useReadRegistryProjects = /*#__PURE__*/ createUseReadContract({
+  abi: registryAbi,
+  functionName: 'projects',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registryAbi}__
+ */
+export const useWriteRegistry = /*#__PURE__*/ createUseWriteContract({
+  abi: registryAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registryAbi}__ and `functionName` set to `"approve"`
+ */
+export const useWriteRegistryApprove = /*#__PURE__*/ createUseWriteContract({
+  abi: registryAbi,
+  functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registryAbi}__ and `functionName` set to `"register"`
+ */
+export const useWriteRegistryRegister = /*#__PURE__*/ createUseWriteContract({
+  abi: registryAbi,
+  functionName: 'register',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registryAbi}__
+ */
+export const useSimulateRegistry = /*#__PURE__*/ createUseSimulateContract({
+  abi: registryAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registryAbi}__ and `functionName` set to `"approve"`
+ */
+export const useSimulateRegistryApprove =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registryAbi,
+    functionName: 'approve',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registryAbi}__ and `functionName` set to `"register"`
+ */
+export const useSimulateRegistryRegister =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registryAbi,
+    functionName: 'register',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registryAbi}__
+ */
+export const useWatchRegistryEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: registryAbi,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registryAbi}__ and `eventName` set to `"Approve"`
+ */
+export const useWatchRegistryApproveEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registryAbi,
+    eventName: 'Approve',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registryAbi}__ and `eventName` set to `"Register"`
+ */
+export const useWatchRegistryRegisterEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registryAbi,
+    eventName: 'Register',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link simpleGrantsAbi}__
+ */
+export const useReadSimpleGrants = /*#__PURE__*/ createUseReadContract({
+  abi: simpleGrantsAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadSimpleGrantsOwner = /*#__PURE__*/ createUseReadContract({
+  abi: simpleGrantsAbi,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"projects"`
+ */
+export const useReadSimpleGrantsProjects = /*#__PURE__*/ createUseReadContract({
+  abi: simpleGrantsAbi,
+  functionName: 'projects',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"strategyName"`
+ */
+export const useReadSimpleGrantsStrategyName =
+  /*#__PURE__*/ createUseReadContract({
+    abi: simpleGrantsAbi,
+    functionName: 'strategyName',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__
+ */
+export const useWriteSimpleGrants = /*#__PURE__*/ createUseWriteContract({
+  abi: simpleGrantsAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"allocate"`
+ */
+export const useWriteSimpleGrantsAllocate =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: simpleGrantsAbi,
+    functionName: 'allocate',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"approve"`
+ */
+export const useWriteSimpleGrantsApprove = /*#__PURE__*/ createUseWriteContract(
+  { abi: simpleGrantsAbi, functionName: 'approve' },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"register"`
+ */
+export const useWriteSimpleGrantsRegister =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: simpleGrantsAbi,
+    functionName: 'register',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteSimpleGrantsRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: simpleGrantsAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteSimpleGrantsTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: simpleGrantsAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useWriteSimpleGrantsWithdraw =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: simpleGrantsAbi,
+    functionName: 'withdraw',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__
+ */
+export const useSimulateSimpleGrants = /*#__PURE__*/ createUseSimulateContract({
+  abi: simpleGrantsAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"allocate"`
+ */
+export const useSimulateSimpleGrantsAllocate =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: simpleGrantsAbi,
+    functionName: 'allocate',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"approve"`
+ */
+export const useSimulateSimpleGrantsApprove =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: simpleGrantsAbi,
+    functionName: 'approve',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"register"`
+ */
+export const useSimulateSimpleGrantsRegister =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: simpleGrantsAbi,
+    functionName: 'register',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateSimpleGrantsRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: simpleGrantsAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateSimpleGrantsTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: simpleGrantsAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link simpleGrantsAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useSimulateSimpleGrantsWithdraw =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: simpleGrantsAbi,
+    functionName: 'withdraw',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link simpleGrantsAbi}__
+ */
+export const useWatchSimpleGrantsEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: simpleGrantsAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link simpleGrantsAbi}__ and `eventName` set to `"Allocate"`
+ */
+export const useWatchSimpleGrantsAllocateEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: simpleGrantsAbi,
+    eventName: 'Allocate',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link simpleGrantsAbi}__ and `eventName` set to `"Approve"`
+ */
+export const useWatchSimpleGrantsApproveEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: simpleGrantsAbi,
+    eventName: 'Approve',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link simpleGrantsAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchSimpleGrantsOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: simpleGrantsAbi,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link simpleGrantsAbi}__ and `eventName` set to `"Register"`
+ */
+export const useWatchSimpleGrantsRegisterEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: simpleGrantsAbi,
+    eventName: 'Register',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link simpleGrantsAbi}__ and `eventName` set to `"Withdraw"`
+ */
+export const useWatchSimpleGrantsWithdrawEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: simpleGrantsAbi,
+    eventName: 'Withdraw',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link strategyAbi}__
  */
 export const useReadStrategy = /*#__PURE__*/ createUseReadContract({
@@ -544,169 +1144,9 @@ export const useReadStrategy = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"id"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"strategyName"`
  */
-export const useReadStrategyId = /*#__PURE__*/ createUseReadContract({
+export const useReadStrategyStrategyName = /*#__PURE__*/ createUseReadContract({
   abi: strategyAbi,
-  functionName: 'id',
+  functionName: 'strategyName',
 })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"name"`
- */
-export const useReadStrategyName = /*#__PURE__*/ createUseReadContract({
-  abi: strategyAbi,
-  functionName: 'name',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"owner"`
- */
-export const useReadStrategyOwner = /*#__PURE__*/ createUseReadContract({
-  abi: strategyAbi,
-  functionName: 'owner',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link strategyAbi}__
- */
-export const useWriteStrategy = /*#__PURE__*/ createUseWriteContract({
-  abi: strategyAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"allocate"`
- */
-export const useWriteStrategyAllocate = /*#__PURE__*/ createUseWriteContract({
-  abi: strategyAbi,
-  functionName: 'allocate',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"approve"`
- */
-export const useWriteStrategyApprove = /*#__PURE__*/ createUseWriteContract({
-  abi: strategyAbi,
-  functionName: 'approve',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"register"`
- */
-export const useWriteStrategyRegister = /*#__PURE__*/ createUseWriteContract({
-  abi: strategyAbi,
-  functionName: 'register',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useWriteStrategyRenounceOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: strategyAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useWriteStrategyTransferOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: strategyAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link strategyAbi}__
- */
-export const useSimulateStrategy = /*#__PURE__*/ createUseSimulateContract({
-  abi: strategyAbi,
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"allocate"`
- */
-export const useSimulateStrategyAllocate =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: strategyAbi,
-    functionName: 'allocate',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"approve"`
- */
-export const useSimulateStrategyApprove =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: strategyAbi,
-    functionName: 'approve',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"register"`
- */
-export const useSimulateStrategyRegister =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: strategyAbi,
-    functionName: 'register',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useSimulateStrategyRenounceOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: strategyAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link strategyAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useSimulateStrategyTransferOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: strategyAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link strategyAbi}__
- */
-export const useWatchStrategyEvent = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: strategyAbi,
-})
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link strategyAbi}__ and `eventName` set to `"Allocate"`
- */
-export const useWatchStrategyAllocateEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: strategyAbi,
-    eventName: 'Allocate',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link strategyAbi}__ and `eventName` set to `"Approve"`
- */
-export const useWatchStrategyApproveEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: strategyAbi,
-    eventName: 'Approve',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link strategyAbi}__ and `eventName` set to `"OwnershipTransferred"`
- */
-export const useWatchStrategyOwnershipTransferredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: strategyAbi,
-    eventName: 'OwnershipTransferred',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link strategyAbi}__ and `eventName` set to `"Register"`
- */
-export const useWatchStrategyRegisterEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: strategyAbi,
-    eventName: 'Register',
-  })

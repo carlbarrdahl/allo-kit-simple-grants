@@ -15,7 +15,7 @@
     "@se-2/nextjs": "*",
     "abitype": "^0.10.2",
     "hono": "^4.5.0",
-    "ponder": "^0.8.3",
+    "ponder": "^0.8.21",
     "viem": "^2.21.3"
   },
   "devDependencies": {

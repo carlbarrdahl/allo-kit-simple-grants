@@ -5,9 +5,9 @@ type IPFSContent = File | Record<string, unknown> | FormData;
 export function useIpfsUpload() {
   return useMutation({
     mutationFn: async (data: IPFSContent) =>
-      fetch(`/api/ipfs`, { method: "POST", body: toFormData(data) })
-        .then((r) => r.json())
-        .then((r) => r.IpfsHash),
+      fetch(`/api/ipfs`, { method: "POST", body: toFormData(data) }).then((r) =>
+        r.json()
+      ),
   });
 }
 

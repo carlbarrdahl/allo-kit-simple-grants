@@ -1,6 +1,7 @@
-import { Abi, type Hex, parseEventLogs } from "viem";
-import { useWalletClient } from "wagmi";
+"use client";
 
+import { useWalletClient } from "wagmi";
+import { Abi, type Hex, parseEventLogs } from "viem";
 import { getTransactionReceipt } from "viem/actions";
 
 export function useWaitForEvent(abi: Abi) {

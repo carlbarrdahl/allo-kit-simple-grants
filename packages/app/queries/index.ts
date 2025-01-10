@@ -36,7 +36,7 @@ export const PROJECTS_SCHEMA = gql`
         isApproved
         allocations {
           items {
-            hash
+            id
             amount
             recipient
             from
@@ -45,6 +45,37 @@ export const PROJECTS_SCHEMA = gql`
           }
         }
       }
+      ${META}
+    }
+  }
+`;
+
+export const ALLOCATIONS_SCHEMA = gql`
+  query Allocations(
+    $after: String
+    $before: String
+    $orderBy: String
+    $orderDirection: String
+    $limit: Int
+    $where: allocationFilter
+  ) {
+    allocations(
+      after: $after
+      before: $before
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      limit: $limit
+      where: $where
+    ) {
+      items {
+        id
+        amount
+        recipient
+        from
+        token
+        createdAt
+      }
+      ${META}
     }
   }
 `;

@@ -1,12 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Address, getAddress, parseUnits } from "viem";
+import { createGlobalState } from "./use-global-state";
+
+const useCartState = createGlobalState<Record<string, number | undefined>>(
+  JSON.parse(global.localStorage?.getItem("cart") ?? "{}")
+);
 
 export function useCart() {
   // Initialize cart state from localStorage, defaulting to an empty object
-  const [items, setCart] = useState<Record<string, number | undefined>>(
-    JSON.parse(global.localStorage?.getItem("cart") ?? "{}")
-  );
+  const [items, setCart] = useCartState();
 
   // Update or remove an item in the cart (undefined removes)
   const set = (id: string, allocation?: number) =>

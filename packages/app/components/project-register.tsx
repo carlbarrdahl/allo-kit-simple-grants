@@ -1,7 +1,14 @@
 "use client";
 import { type z } from "zod";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import {
+  Address,
+  generatePrivateKey,
+  privateKeyToAccount,
+} from "viem/accounts";
+
 import {
   Form,
   FormControl,
@@ -14,40 +21,43 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-
-import { CreateGrantSchema } from "~/schemas/grant";
-import { useIpfsUpload } from "~/hooks/use-ipfs";
-import { useAccount } from "wagmi";
-import { BalanceCheck } from "./balance-check";
+import { CreateProjectSchema } from "~/schemas/project";
 import { useRegister } from "~/hooks/use-register";
-import { useRouter } from "next/navigation";
+import { useIpfsUpload } from "~/hooks/use-ipfs-upload";
+import { BalanceCheck } from "./balance-check";
+import { ImageUpload } from "./image-upload";
 
-export function CreateGrant() {
-  const { address } = useAccount();
+export function ProjectRegister({
+  strategyAddress,
+}: {
+  strategyAddress: Address;
+}) {
   const router = useRouter();
-  const form = useForm<z.infer<typeof CreateGrantSchema>>({
-    resolver: zodResolver(CreateGrantSchema),
+  const form = useForm<z.infer<typeof CreateProjectSchema>>({
+    resolver: zodResolver(CreateProjectSchema),
     defaultValues: {
-      address,
+      address: privateKeyToAccount(generatePrivateKey()).address,
       metadata: {
         title: "Grant Project",
+        image: undefined,
         description: `This is a project...`,
       },
     },
   });
-  const register = useRegister();
-  const ipfs = useIpfsUpload();
 
-  const isLoading = ipfs.isPending || register.isPending;
+  const register = useRegister({ strategyAddress });
+  const upload = useIpfsUpload();
+
+  const isLoading = upload.isPending || register.isPending;
   return (
     <Form {...form}>
       <form
         className="relative space-y-2 mx-auto max-w-screen-sm"
         onSubmit={form.handleSubmit(async (values) => {
-          const metadata = await ipfs.mutateAsync(values.metadata);
-          register.mutate([values.address, metadata, "0x"], {
-            onSuccess: () => router.push(`/`),
-          });
+          const { cid: metadata } = await upload.mutateAsync(values.metadata);
+          register
+            .mutateAsync([values.address, metadata, "0x"])
+            .then((r) => router.push(`/project/${r.project}`));
         })}
       >
         <FormField
@@ -63,6 +73,20 @@ export function CreateGrant() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="metadata.image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image</FormLabel>
+              <FormControl>
+                <ImageUpload {...field} upload={upload} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="address"
@@ -93,7 +117,7 @@ export function CreateGrant() {
         <div className="flex items-center justify-end">
           <BalanceCheck>
             <Button isLoading={isLoading} type="submit">
-              Create Grant
+              Create Project
             </Button>
           </BalanceCheck>
         </div>

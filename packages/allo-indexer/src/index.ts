@@ -1,60 +1,69 @@
 import { Context, ponder } from "ponder:registry";
-import schema from "ponder:schema";
+import schemas from "ponder:schema";
 import { Address, erc20Abi, formatUnits } from "viem";
 
 const PINATA_GATEWAY_URL = process.env.PINATA_GATEWAY_URL;
 const PINATA_GATEWAY_KEY = process.env.PINATA_GATEWAY_KEY;
 
-ponder.on("YourContract:Register", async ({ event, context }) => {
-  const { project, metadataURI } = event.args;
+ponder.on("Strategy:Initialize", async ({ event, context }) => {
+  const {  strategyName } = event.args;
 
-  const metadata = await fetchMetadata(metadataURI);
   await context.db
-    .insert(schema.project)
+    .insert(schemas.strategy)
     .values({
-      address: project,
-      metadataURI,
-      metadata,
-      isApproved: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      address: event.log.address,
+      name: strategyName,
+      createdAt: toSeconds(Date.now()),
     })
     .onConflictDoNothing();
 });
 
-ponder.on("YourContract:Approve", async ({ event, context }) => {
+ponder.on("Registry:Register", async ({ event, context }) => {
+  const { project, metadataURI } = event.args;
+
+  const metadata = await fetchMetadata(metadataURI);
+  
+  await context.db
+    .insert(schemas.project)
+    .values({
+      address: project,
+      strategy: event.log.address,
+      metadataURI,
+      metadata,
+      isApproved: false,
+      createdAt: toSeconds(Date.now()),
+      updatedAt: toSeconds(Date.now()),
+    })
+    .onConflictDoNothing();
+});
+
+ponder.on("Registry:Approve", async ({ event, context }) => {
   const { project, metadataURI } = event.args;
 
   const review = await fetchMetadata(metadataURI);
-  await context.db.update(schema.project, { address: project }).set(() => ({
+
+  await context.db.update(schemas.project, { address: project }).set(() => ({
     isApproved: true,
-    updatedAt: new Date(),
+    updatedAt: toSeconds(Date.now()),
     review,
   }));
 });
 
-ponder.on("YourContract:Allocate", async ({ event, context }) => {
+ponder.on("Allocator:Allocate", async ({ event, context }) => {
   const { recipient, from, token, amount } = event.args;
-  console.log(event);
+  
   const [decimals, symbol] = await fetchToken(token, context.client);
 
-  await context.db
-    .insert(schema.allocation)
-    .values({
-      hash: event.transaction.hash,
-      recipient,
-      from,
-      amount: Number(formatUnits(amount, decimals)),
-      token: { address: token, decimals, symbol },
-      tokenAddress: token,
-      createdAt: new Date(),
-    })
-    .onConflictDoNothing();
-
-  // await context.db
-  // .insert(schema.projectAllocation)
-  // .values({ projectAddress, recipientAddress: recipient })
-  // .onConflictDoNothing();
+  await context.db.insert(schemas.allocation).values({
+    id: `${event.log.id}`,
+    strategy: event.log.address,
+    recipient,
+    from,
+    amount: Number(formatUnits(amount, decimals)),
+    token: { address: token, decimals, symbol },
+    tokenAddress: token,
+    createdAt: toSeconds(Date.now()),
+  });
 });
 
 async function fetchMetadata(cid: string) {
@@ -72,4 +81,9 @@ async function fetchToken(address: Address, client: Context["client"]) {
     client.readContract({ ...tokenContract, functionName: "decimals" }),
     client.readContract({ ...tokenContract, functionName: "symbol" }),
   ]);
+}
+
+
+function toSeconds(ms: number) {
+  return Math.floor(ms / 1000)
 }
