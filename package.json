@@ -14,6 +14,7 @@
     "allo:dev": "yarn workspace @se-2/allo-app dev",
     "allo:start": "yarn workspace @se-2/allo-app start",
     "allo:indexer": "yarn workspace @se-2/allo-indexer dev",
+    "allo:indexer:start": "yarn workspace @se-2/allo-indexer start",
     "chain": "yarn workspace @se-2/hardhat chain",
     "compile": "yarn workspace @se-2/hardhat compile",
     "deploy": "yarn workspace @se-2/hardhat deploy",
