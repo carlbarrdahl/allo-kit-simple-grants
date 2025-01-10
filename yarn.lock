@@ -3715,7 +3715,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@se-2/allo-indexer@workspace:packages/allo-indexer"
   dependencies:
-    "@se-2/nextjs": "*"
+    "@se-2/nextjs": "workspace:^"
     "@types/node": ^20.10.0
     abitype: ^0.10.2
     eslint: ^8.54.0
@@ -3769,7 +3769,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@se-2/nextjs@*, @se-2/nextjs@workspace:packages/nextjs":
+"@se-2/nextjs@*, @se-2/nextjs@workspace:^, @se-2/nextjs@workspace:packages/nextjs":
   version: 0.0.0-use.local
   resolution: "@se-2/nextjs@workspace:packages/nextjs"
   dependencies:

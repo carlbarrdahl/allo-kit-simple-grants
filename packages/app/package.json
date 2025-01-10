@@ -16,7 +16,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.4",
     "@rainbow-me/rainbowkit": "^2.2.1",
-    "@se-2/nextjs": "*",
+    "@se-2/nextjs": "workspace:^",
     "@tanstack/react-query": "^5.62.7",
     "@urql/core": "^5.1.0",
     "class-variance-authority": "^0.7.1",
