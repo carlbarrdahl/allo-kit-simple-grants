@@ -1,9 +1,12 @@
 import { createConfig } from "ponder";
 import { http } from "viem";
 import deployedContracts from "@se-2/nextjs/contracts/deployedContracts";
-import scaffoldConfig from "@se-2/nextjs/scaffold.config";
+import { baseSepolia, hardhat } from "viem/chains";
 
-const targetNetwork = scaffoldConfig.targetNetworks[0];
+const isDev = process.env.NODE_ENV === "development";
+
+const targetNetwork = isDev ? hardhat : baseSepolia;
+const START_BLOCK = isDev ? 0 : 19501634;
 
 const networks = {
   [targetNetwork.name]: {
@@ -20,17 +23,17 @@ export default createConfig({
     Allocator: {
       network: targetNetwork.name,
       abi: Allocator.abi,
-      startBlock: 0,
+      startBlock: START_BLOCK || 0,
     },
     Strategy: {
       network: targetNetwork.name,
       abi: Strategy.abi,
-      startBlock: 0,
+      startBlock: START_BLOCK || 0,
     },
     Registry: {
       network: targetNetwork.name,
       abi: Registry.abi,
-      startBlock: 0,
+      startBlock: START_BLOCK || 0,
     },
   },
 });
