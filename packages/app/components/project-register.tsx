@@ -26,17 +26,19 @@ import { useRegister } from "~/hooks/use-register";
 import { useIpfsUpload } from "~/hooks/use-ipfs-upload";
 import { BalanceCheck } from "./balance-check";
 import { ImageUpload } from "./image-upload";
+import { useAccount } from "wagmi";
 
 export function ProjectRegister({
   strategyAddress,
 }: {
   strategyAddress: Address;
 }) {
+  const { address } = useAccount();
   const router = useRouter();
   const form = useForm<z.infer<typeof CreateProjectSchema>>({
     resolver: zodResolver(CreateProjectSchema),
     defaultValues: {
-      address: privateKeyToAccount(generatePrivateKey()).address,
+      address: address,
       metadata: {
         title: "Grant Project",
         image: undefined,
